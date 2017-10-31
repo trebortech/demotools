@@ -1,0 +1,8 @@
+configs:
+    minionname: 'minion8'
+    saltmaster: '192.168.2.29'
+    packageurl: 'https://repo.saltstack.com/windows/'
+    minionfile: 'Salt-Minion-2017.7.2-Py2-AMD64-Setup.exe'
+    vbbox: 'ykwindows10v3'
+    username: 'ykdemo1'
+    password: 'ykdemo'
