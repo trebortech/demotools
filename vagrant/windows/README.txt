@@ -26,19 +26,21 @@ PREP WORK:
    name: windows10base
 
 2. Install Windows OS
+  NOTE: Select "Domain join instead" for account
 
 3. Username: ykdemo1
    Password: ykdemo
 
 4. Run all system updates
 
-5. Install Virtualbox tools
+5. Install Virtualbox Guest Additions.
 
-6. Disable all firewalls (This should be configured with SaltStack)
+6. Disable all firewalls (Domain, Private, Public)
+The firewall should be configured once SaltStack runs
 
 7. Run powershell as Administrator
 
-8. Configure basic winrm setting.
+8. Configure basic winrm setting. (Make sure completes without error. Needs to be private or domain network)
    winrm quickconfig
 
 9. Shutdown Windows box
@@ -48,4 +50,9 @@ PREP WORK:
 
 11. Load box into library
    vagrant box add .\windows10 --name ykwindows10v1
+
+
+----- YOU NOW HAVE THE IMAGE READY FOR VAGRANT -------
+
+Update the config.yaml with your information and execute vagrant up
 
