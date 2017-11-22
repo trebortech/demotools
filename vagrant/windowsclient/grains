@@ -1,0 +1,4 @@
+yubico:
+  - computername: "client1"
+  - gatewayip: "2"
+  - timezone: 'America/Chicago'

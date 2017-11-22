@@ -8,7 +8,7 @@ This vagrant file was created to deploy a very basic Windows box and install the
 
 NOTE:
 This file requires some leg work first to get the base image in the correct state for this to work. Follow the steps below.
-
+c
 WARNING:
 It is my assumption that you will modify the sensitive information like passwords and firewall on the deployed box immediatly after deployment with SaltStack.
 
@@ -54,5 +54,6 @@ The firewall should be configured once SaltStack runs
 
 ----- YOU NOW HAVE THE IMAGE READY FOR VAGRANT -------
 
-Update the config.yaml with your information and execute vagrant up
+Update the config.yaml with your information and execute 
+vagrant -otp="cccc.....ccccc" up
 

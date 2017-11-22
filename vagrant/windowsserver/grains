@@ -1,0 +1,9 @@
+yubico:
+  - computername: "ACMEAD"
+  - domain: "acme.lab"
+  - password: "......"
+  - csname: "DemoACME"
+  - gatewayip: "2"
+  - timezone: 'America/Chicago'
+roles:
+  - DemoAD

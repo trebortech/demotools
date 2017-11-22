@@ -1,0 +1,6 @@
+saltmaster: 'yk.salt.trebortech.ninja'
+packageurl: 'https://repo.saltstack.com/windows/'
+minionfile: 'Salt-Minion-2017.7.2-Py2-AMD64-Setup.exe'
+vbbox: 'ykwindows10v1'
+username: 'ykdemo'
+password: '.....'

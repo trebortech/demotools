@@ -1,0 +1,79 @@
+
+require 'getoptlong'
+require 'yaml'
+
+configs = YAML.load_file('config.yaml')
+
+opts = GetoptLong.new(
+  ['--otp', GetoptLong::REQUIRED_ARGUMENT],
+  ['--nodenum', GetoptLong::OPTIONAL_ARGUMENT],
+  ['--rdp', GetoptLong::OPTIONAL_ARGUMENT]
+)
+
+MINIONNAME = 'NONAME'
+RDPPORT = rand(50000..50099)
+NODENUM = rand(2..254)
+
+opts.each do |opt, arg|
+  case opt
+    when '--otp'
+      MINIONNAME=arg 
+    when '--rdp'
+      RDPPORT=arg
+    when '--nodenum'
+      NODENUM=arg
+  end
+end
+
+MACADDRESS = "22" + 5.times.map { '%02x' % rand(0..255) }.join('')
+
+SALTMASTER = configs['saltmaster']
+PACKAGEURL = configs['packageurl']
+MINIONFILE = configs['minionfile']
+VBBOX = configs['vbbox']
+USERNAME = configs['username']
+PASSWORD = configs['password']
+
+
+$script = <<SCRIPT
+$minionname = $env:MinionName
+$saltmaster = $env:SaltMaster
+$packageurl = $env:PackageUrl
+$minionfile = $env:MinionFile
+$vagrantinfo = $env:RdpPort
+mkdir c:\\stage\\
+[string]$vagrantinfo | out-file -filepath "c:\\stage\\vagrantinfo.txt" -encoding ASCII
+$filepath = "c:\\stage\\$minionfile"
+$fileurl = "$packageurl$minionfile"
+$webclient = New-Object System.Net.WebClient
+$webclient.DownloadFile($fileurl, $filepath);
+(new-object -com shell.application).shellexecute($filepath, "/S /master=$saltmaster /minion-name=$minionname");
+SCRIPT
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "#{VBBOX}"
+  config.vm.box_check_update = false
+  config.vm.communicator = "winrm"
+
+  config.vm.network "public_network", ip: "192.168.55.#{NODENUM}"
+  config.vm.network "forwarded_port", guest: "3389", host: "#{RDPPORT}", protocol: "tcp"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.customize ['modifyvm', :id, "--macaddress1", "#{MACADDRESS}"]
+  end
+
+  config.vm.define "#{MINIONNAME}" do |win|
+    win.vm.provider "virtualbox" do |v|
+      v.gui = true
+      v.name = "#{MINIONNAME}"
+    end
+  end
+
+  config.winrm.username = "#{USERNAME}"
+  config.winrm.password = "#{PASSWORD}"
+  config.winrm.retry_limit = 20
+  config.winrm.retry_delay = 10
+
+  config.vm.provision "shell", inline: $script, env: {"MinionName" => MINIONNAME, "SaltMaster" => SALTMASTER, "MinionFile" => MINIONFILE, "PackageUrl" => PACKAGEURL, "RdpPort" => RDPPORT}
+  config.vm.provision "file", source: "grains", destination: "c:\\salt\\conf\\grains"
+end
